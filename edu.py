@@ -407,40 +407,41 @@ if page == "🏠 Home":
 
     # Hero section
     st.markdown(
-        """
-        <div style="
-            background: linear-gradient(135deg, #12355b, #1f6feb);
-            padding: 35px 40px;
-            border-radius: 16px;
-            margin-bottom: 25px;
+    st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #12355b, #1f6feb);
+        padding: 35px 40px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+    ">
+        <h1 style="
+            color: white;
+            margin-bottom: 8px;
+            font-size: 42px;
         ">
-            <h1 style="
-                color: white;
-                margin-bottom: 8px;
-                font-size: 42px;
-            ">
-                🏫 EduFix
-            </h1>
+            🏫 EduFix
+        </h1>
 
-            <p style="
-                color: #e8f1ff;
-                font-size: 20px;
-                margin-bottom: 8px;
-            ">
-                Smart School Problem Reporting & Decision Support System
-            </p>
+        <p style="
+            color: #e8f1ff;
+            font-size: 20px;
+            margin-bottom: 8px;
+        ">
+            Smart School Problem Reporting & Decision Support System
+        </p>
 
-            <p style="
-                color: #dbeafe;
-                font-size: 15px;
-                margin-bottom: 0;
-            ">
-                Report problems, prioritize their urgency, track progress,
-                and use data to support better school management.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
+        <p style="
+            color: #dbeafe;
+            font-size: 15px;
+            margin-bottom: 0;
+        ">
+            Report problems, prioritize their urgency, track progress,
+            and use data to support better school management.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
     )
 
     st.subheader("What EduFix Does")
@@ -581,8 +582,6 @@ if page == "🏠 Home":
         "EduFix • Academic Prototype for School Problem Reporting "
         "& Data-Driven Decision Support"
     )
-
-# ---------------- REPORT A PROBLEM ----------------
 
 # ==============================
 # REPORT A PROBLEM
@@ -844,110 +843,6 @@ if page == "📝 Report a Problem":
                 and connection.is_connected()
             ):
                 connection.close()
-    # ---------------- PRIORITY CALCULATION ----------------
-
-    severity_score = {
-        "Low": 10,
-        "Medium": 25,
-        "High": 40,
-        "Critical": 50
-    }
-
-    score = severity_score[severity]
-
-    # Effect of number of people affected
-    if people_affected <= 5:
-        people_score = 5
-    elif people_affected <= 20:
-        people_score = 15
-    elif people_affected <= 50:
-        people_score = 25
-    else:
-        people_score = 30
-
-    priority_score = min(score + people_score, 100)
-
-    if priority_score >= 70:
-        priority_level = "High"
-    elif priority_score >= 40:
-        priority_level = "Medium"
-    else:
-        priority_level = "Low"
-
-    st.divider()
-
-    st.subheader("Priority Assessment")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric(
-            "Priority Score",
-            f"{priority_score}/100"
-        )
-
-    with col2:
-        st.metric(
-            "Priority Level",
-            priority_level
-        )
-
-    # ---------------- SUBMIT REPORT ----------------
-
-    if st.button(
-        "Submit Problem Report",
-        use_container_width=True
-    ):
-
-        if not description.strip():
-
-            st.warning(
-                "Please provide a description of the problem."
-            )
-
-        else:
-
-            connection = get_connection()
-            cursor = connection.cursor()
-
-            query = """
-            INSERT INTO reports
-            (
-                user_id,
-                category,
-                location,
-                severity,
-                people_affected,
-                report_date,
-                description,
-                priority_score,
-                status
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
-
-            values = (
-                st.session_state.user_id,
-                category,
-                location,
-                severity,
-                people_affected,
-                report_date,
-                description,
-                priority_score,
-                "Pending"
-            )
-
-            cursor.execute(query, values)
-            connection.commit()
-
-            cursor.close()
-            connection.close()
-
-            st.success(
-                f"Problem reported successfully! "
-                f"Priority: {priority_level} ({priority_score}/100)"
-            )
 
 # ---------------- CHECK STATUS ----------------
 
