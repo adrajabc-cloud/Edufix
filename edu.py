@@ -401,131 +401,449 @@ if st.sidebar.button(
 
 # ---------------- HOME ----------------
 
+# ---------------- HOME ----------------
+
 if page == "🏠 Home":
 
-    st.title("🏫 EduFix")
+    # Hero section
+    st.markdown(
+        """
+        <div style="
+            background: linear-gradient(135deg, #12355b, #1f6feb);
+            padding: 35px 40px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        ">
+            <h1 style="
+                color: white;
+                margin-bottom: 8px;
+                font-size: 42px;
+            ">
+                🏫 EduFix
+            </h1>
 
-    st.subheader(
-        "Smart School Problem Reporting & Decision Support System"
+            <p style="
+                color: #e8f1ff;
+                font-size: 20px;
+                margin-bottom: 8px;
+            ">
+                Smart School Problem Reporting & Decision Support System
+            </p>
+
+            <p style="
+                color: #dbeafe;
+                font-size: 15px;
+                margin-bottom: 0;
+            ">
+                Report problems, prioritize their urgency, track progress,
+                and use data to support better school management.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
+    st.subheader("What EduFix Does")
+
     st.write(
-        "EduFix provides a digital platform for reporting, "
-        "tracking, analyzing and prioritizing school-related problems."
+        "EduFix provides a centralized platform for reporting and "
+        "managing school-related problems. Each report is evaluated "
+        "using a transparent priority scoring system."
     )
 
     st.divider()
 
+    # Feature cards
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric("Digital Reporting", "✓")
-        st.caption("Report school problems digitally.")
+        st.markdown(
+            """
+            <div style="
+                background:white;
+                padding:22px;
+                border-radius:12px;
+                border:1px solid #e2e8f0;
+                min-height:170px;
+            ">
+                <div style="font-size:30px;">📝</div>
+                <h3 style="color:#12355b;">Digital Reporting</h3>
+                <p>
+                    Submit school problems with category, location,
+                    severity and affected people.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with col2:
-        st.metric("Priority Analysis", "✓")
-        st.caption("Identify problems requiring greater attention.")
+        st.markdown(
+            """
+            <div style="
+                background:white;
+                padding:22px;
+                border-radius:12px;
+                border:1px solid #e2e8f0;
+                min-height:170px;
+            ">
+                <div style="font-size:30px;">🎯</div>
+                <h3 style="color:#12355b;">Priority Analysis</h3>
+                <p>
+                    A transparent score helps identify problems
+                    requiring greater attention.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with col3:
-        st.metric("Data Analytics", "✓")
-        st.caption("Analyze recurring problems and trends.")
+        st.markdown(
+            """
+            <div style="
+                background:white;
+                padding:22px;
+                border-radius:12px;
+                border:1px solid #e2e8f0;
+                min-height:170px;
+            ">
+                <div style="font-size:30px;">📊</div>
+                <h3 style="color:#12355b;">Data Analytics</h3>
+                <p>
+                    Analyze reports, status, severity and problem
+                    patterns through the dashboard.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     st.divider()
 
+    # Workflow
     st.subheader("How EduFix Works")
 
-    st.markdown("""
-    **1. Report**
-    Submit details about a school problem.
+    step1, step2, step3, step4 = st.columns(4)
 
-    **2. Analyze**
-    EduFix calculates a transparent priority score.
+    with step1:
+        st.markdown("### 1️⃣ Report")
+        st.caption(
+            "Submit details about a school problem."
+        )
 
-    **3. Track**
-    Check whether a reported problem is Pending,
-    In Progress or Resolved.
+    with step2:
+        st.markdown("### 2️⃣ Prioritize")
+        st.caption(
+            "EduFix calculates a transparent priority score."
+        )
 
-    **4. Improve**
-    Use dashboards and analytics to identify
-    recurring problem areas.
-    """)
+    with step3:
+        st.markdown("### 3️⃣ Track")
+        st.caption(
+            "Monitor whether the problem is Pending, "
+            "In Progress or Resolved."
+        )
 
-    st.info(
-        "EduFix is designed as an academic prototype for "
-        "school problem reporting and data-driven decision support."
+    with step4:
+        st.markdown("### 4️⃣ Improve")
+        st.caption(
+            "Use collected data to identify recurring issues."
+        )
+
+    st.divider()
+
+    # Project highlight
+    st.markdown(
+        """
+        <div style="
+            background:#eef5ff;
+            border-left:5px solid #1f6feb;
+            padding:20px;
+            border-radius:8px;
+        ">
+            <h3 style="color:#12355b; margin-top:0;">
+                💡 Why EduFix?
+            </h3>
+            <p style="margin-bottom:0;">
+                Instead of relying only on verbal or manual reporting,
+                EduFix creates a structured digital record that can be
+                analyzed and used to support better decision-making.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.caption(
+        "EduFix • Academic Prototype for School Problem Reporting "
+        "& Data-Driven Decision Support"
     )
 
 # ---------------- REPORT A PROBLEM ----------------
+
+# ==============================
+# REPORT A PROBLEM
+# ==============================
 
 if page == "📝 Report a Problem":
 
     st.title("📝 Report a Problem")
 
     st.write(
-        "Submit details about a school problem. "
-        "EduFix will calculate its priority automatically."
+        "Provide details about the problem. EduFix will calculate "
+        "a priority score based on its severity, impact, category "
+        "and location."
     )
 
     st.divider()
 
-    category = st.selectbox(
-        "Problem Category",
-        [
-            "Electrical",
-            "Furniture",
-            "Water / Plumbing",
-            "Cleanliness",
-            "Laboratory",
-            "Library",
-            "Computer Lab",
-            "Washroom",
-            "Other"
-        ]
-    )
+    # ---------------- PROBLEM DETAILS ----------------
 
-    location = st.selectbox(
-        "Location",
-        [
-            "Classroom",
-            "Science Block",
-            "Computer Lab",
-            "Library",
-            "Laboratory",
-            "Washroom",
-            "Playground",
-            "Corridor",
-            "Other"
-        ]
-    )
+    st.subheader("📋 Problem Details")
 
-    severity = st.selectbox(
-        "Severity",
-        [
-            "Low",
-            "Medium",
-            "High",
-            "Critical"
-        ]
-    )
+    col1, col2 = st.columns(2)
 
-    people_affected = st.number_input(
-        "Number of People Affected",
-        min_value=1,
-        max_value=1000,
-        value=1,
-        step=1
-    )
+    with col1:
 
-    report_date = st.date_input(
-        "Date of Report",
-        value=date.today()
-    )
+        category = st.selectbox(
+            "Problem Category",
+            [
+                "Electrical",
+                "Furniture",
+                "Water / Plumbing",
+                "Cleanliness",
+                "Laboratory",
+                "Library",
+                "Computer Lab",
+                "Washroom",
+                "Other"
+            ]
+        )
+
+        severity = st.selectbox(
+            "Severity",
+            [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+            ]
+        )
+
+    with col2:
+
+        location = st.selectbox(
+            "Problem Location",
+            [
+                "Classroom",
+                "Science Block",
+                "Computer Lab",
+                "Library",
+                "Laboratory",
+                "Washroom",
+                "Playground",
+                "Corridor",
+                "Other"
+            ]
+        )
+
+        people_affected = st.number_input(
+            "Number of People Affected",
+            min_value=1,
+            max_value=1000,
+            value=1,
+            step=1
+        )
 
     description = st.text_area(
-        "Problem Description",
-        placeholder="Describe the problem clearly..."
+        "Describe the Problem",
+        placeholder=(
+            "Briefly describe what happened, where it occurred "
+            "and any important details..."
+        ),
+        height=120
     )
 
+    report_date = date.today()
+
+    st.divider()
+
+    # ---------------- PRIORITY INFORMATION ----------------
+
+    st.subheader("🎯 Priority Analysis")
+
+    st.info(
+        "EduFix calculates priority using five factors: "
+        "severity, people affected, category, location and "
+        "the time a problem remains unresolved."
+    )
+
+    st.caption(
+        "A higher score indicates a greater need for attention. "
+        "The scoring system is transparent and rule-based."
+    )
+
+    st.divider()
+
+    # ---------------- SUBMIT ----------------
+
+    if st.button(
+        "🚀 Submit Report",
+        use_container_width=True
+    ):
+
+        severity_score = {
+            "Low": 8,
+            "Medium": 17,
+            "High": 26,
+            "Critical": 35
+        }
+
+        category_score = {
+            "Electrical": 15,
+            "Water / Plumbing": 14,
+            "Laboratory": 12,
+            "Computer Lab": 10,
+            "Washroom": 10,
+            "Cleanliness": 8,
+            "Furniture": 7,
+            "Library": 5,
+            "Other": 5
+        }
+
+        location_score = {
+            "Classroom": 15,
+            "Science Block": 20,
+            "Computer Lab": 18,
+            "Library": 10,
+            "Laboratory": 18,
+            "Washroom": 15,
+            "Playground": 10,
+            "Corridor": 12,
+            "Other": 5
+        }
+
+        severity_points = severity_score[severity]
+        category_points = category_score[category]
+        location_points = location_score[location]
+
+        if people_affected <= 5:
+            people_points = 4
+        elif people_affected <= 20:
+            people_points = 8
+        elif people_affected <= 50:
+            people_points = 14
+        else:
+            people_points = 20
+
+        time_points = 0
+
+        priority_score = (
+            severity_points
+            + people_points
+            + category_points
+            + location_points
+            + time_points
+        )
+
+        if priority_score >= 70:
+            priority_level = "High"
+        elif priority_score >= 40:
+            priority_level = "Medium"
+        else:
+            priority_level = "Low"
+
+        connection = None
+        cursor = None
+
+        try:
+
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            query = """
+            INSERT INTO reports
+            (
+                user_id,
+                category,
+                location,
+                severity,
+                people_affected,
+                report_date,
+                description,
+                priority_score,
+                status
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+
+            values = (
+                st.session_state.user_id,
+                category,
+                location,
+                severity,
+                people_affected,
+                report_date,
+                description,
+                priority_score,
+                "Pending"
+            )
+
+            cursor.execute(query, values)
+            connection.commit()
+
+            st.success(
+                "✅ Problem reported successfully!"
+            )
+
+            st.divider()
+
+            st.subheader("📊 Report Summary")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Priority Score",
+                    f"{priority_score}/100"
+                )
+
+            with col2:
+                st.metric(
+                    "Priority Level",
+                    priority_level
+                )
+
+            with col3:
+                st.metric(
+                    "Status",
+                    "Pending"
+                )
+
+            st.info(
+                "Your report has been saved successfully. "
+                "You can monitor its progress from Check Status."
+            )
+
+        except mysql.connector.Error as error:
+
+            st.error(
+                f"Database error: {error}"
+            )
+
+        finally:
+
+            if cursor is not None:
+                cursor.close()
+
+            if (
+                connection is not None
+                and connection.is_connected()
+            ):
+                connection.close()
     # ---------------- PRIORITY CALCULATION ----------------
 
     severity_score = {
