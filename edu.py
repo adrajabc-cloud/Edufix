@@ -33,48 +33,6 @@ try:
 finally:
     if connection is not None and connection.is_connected():
         connection.close()
-# Create cursor
-cursor = connection.cursor()
-
-# Create users table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    school_name VARCHAR(150) NOT NULL,
-    role VARCHAR(30) NOT NULL,
-    class_section VARCHAR(30),
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL
-)
-""")
-
-# Create reports table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS reports (
-    report_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    location VARCHAR(100) NOT NULL,
-    severity VARCHAR(20) NOT NULL,
-    people_affected INT NOT NULL,
-    report_date DATE NOT NULL,
-    description TEXT,
-    priority_score INT,
-    status VARCHAR(20) DEFAULT 'Pending',
-
-    FOREIGN KEY (user_id)
-    REFERENCES users(user_id)
-)
-""")
-
-connection.commit()
-
-print("Users table created successfully.")
-print("Reports table created successfully.")
-
-cursor.close()
-connection.close()
 
 # ---------------- DATABASE CONNECTION ----------------
 
