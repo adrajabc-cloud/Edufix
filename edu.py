@@ -15,10 +15,16 @@ def get_connection():
     )
 
 
-if connection.is_connected():
-    print("EduFix MySQL database connected successfully!")
-else:
-    print("Database connection failed.")
+connection = None
+
+try:
+    connection = get_connection()
+
+    # database work here
+
+finally:
+    if connection is not None and connection.is_connected():
+        connection.close()
 # Create cursor
 cursor = connection.cursor()
 
