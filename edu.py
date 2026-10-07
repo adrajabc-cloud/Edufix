@@ -380,7 +380,6 @@ st.sidebar.markdown(
     "**Navigation**",
     unsafe_allow_html=True
 )
-
 pages = [
     "🏠 Home",
     "📝 Report a Problem",
@@ -389,9 +388,10 @@ pages = [
 ]
 
 if st.session_state.user_role == "Admin":
-    pages.append("🏠 Home", 
-        "🛡️ Admin Management")
-
+    pages = [
+        "🏠 Home",
+        "🛡️ Admin Management"
+    ]
 page = st.sidebar.radio(
     "",
     pages
