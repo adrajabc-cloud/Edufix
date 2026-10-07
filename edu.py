@@ -338,22 +338,61 @@ if not st.session_state.logged_in:
     st.stop()
 # ---------------- MAIN APPLICATION ----------------
 
-st.sidebar.title("EduFix")
+st.sidebar.markdown(
+    """
+    <div style="text-align:center; padding:10px 0 20px 0;">
+        <div style="font-size:42px;">🏫</div>
+        <h2 style="margin:0; color:white;">EduFix</h2>
+        <p style="margin:4px 0; color:#dbeafe; font-size:13px;">
+            School Problem Management
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-st.sidebar.write(f"Welcome, {st.session_state.user_name}")
+st.sidebar.markdown("---")
+
+st.sidebar.markdown(
+    f"""
+    <div style="
+        background-color: rgba(255,255,255,0.10);
+        padding:12px;
+        border-radius:10px;
+        margin-bottom:15px;
+    ">
+        <div style="font-size:12px; color:#dbeafe;">
+            LOGGED IN AS
+        </div>
+        <div style="font-size:17px; font-weight:600; color:white;">
+            {st.session_state.user_name}
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.sidebar.markdown(
+    "**Navigation**",
+    unsafe_allow_html=True
+)
 
 page = st.sidebar.radio(
-    "Navigation",
+    "",
     [
-        "Home",
-        "Report a Problem",
-        "Check Status",
-        "Dashboard & Analytics"
+        "🏠 Home",
+        "📝 Report a Problem",
+        "🔎 Check Status",
+        "📊 Dashboard & Analytics"
     ]
 )
-st.sidebar.divider()
 
-if st.sidebar.button("Logout", use_container_width=True):
+st.sidebar.markdown("---")
+
+if st.sidebar.button(
+    "🚪 Logout",
+    use_container_width=True
+):
     st.session_state.logged_in = False
     st.session_state.user_id = None
     st.session_state.user_name = ""
@@ -362,7 +401,7 @@ if st.sidebar.button("Logout", use_container_width=True):
 
 # ---------------- HOME ----------------
 
-if page == "Home":
+if page == "🏠 Home":
 
     st.title("🏫 EduFix")
 
@@ -418,7 +457,7 @@ if page == "Home":
 
 # ---------------- REPORT A PROBLEM ----------------
 
-if page == "Report a Problem":
+if page == "📝 Report a Problem":
 
     st.title("📝 Report a Problem")
 
@@ -594,8 +633,7 @@ if page == "Report a Problem":
 
 # ---------------- CHECK STATUS ----------------
 
-if page == "Check Status":
-
+if page == "🔎 Check Status":
     st.title("🔎 Check Status")
 
     st.write(
@@ -693,7 +731,7 @@ if page == "Check Status":
 # DASHBOARD & ANALYTICS
 # ==============================
 
-if page == "Dashboard & Analytics":
+if page == "📊 Dashboard & Analytics":
 
     st.title("📊 Dashboard & Analytics")
     st.write(
