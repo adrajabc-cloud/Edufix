@@ -13,7 +13,7 @@ def get_connection():
         password=st.secrets["DB_PASSWORD"],
         database=st.secrets["DB_NAME"]
     )
-)
+
 
 if connection.is_connected():
     print("EduFix MySQL database connected successfully!")
