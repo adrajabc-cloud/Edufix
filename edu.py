@@ -407,7 +407,6 @@ if page == "🏠 Home":
 
     # Hero section
     st.markdown(
-    st.markdown(
     """
     <div style="
         background: linear-gradient(135deg, #12355b, #1f6feb);
