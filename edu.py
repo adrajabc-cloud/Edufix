@@ -125,7 +125,7 @@ if "user_id" not in st.session_state:
 
 if "user_name" not in st.session_state:
     st.session_state.user_name = ""
- if "user_role" not in st.session_state:
+if "user_role" not in st.session_state:
     st.session_state.user_role = ""   
 
 
