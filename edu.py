@@ -746,7 +746,6 @@ if page == "📝 Report a Problem":
                 and connection.is_connected()
             ):
                 connection.close()
----------------------------------------
    # ---------------- CHECK STATUS ----------------
 
 if page == "🔎 Check Status":
