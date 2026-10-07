@@ -53,6 +53,66 @@ st.set_page_config(
     page_icon="🏫",
     layout="wide"
 )
+# ---------------- EDUFIX UI STYLE ----------------
+
+st.markdown("""
+<style>
+
+    /* Main background */
+    .stApp {
+        background-color: #f7f9fc;
+    }
+
+    /* Main headings */
+    h1, h2, h3 {
+        color: #12355b;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #12355b;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: white;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background-color: #1f6feb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+    }
+
+    .stButton > button:hover {
+        background-color: #1558b0;
+        color: white;
+    }
+
+    /* Metric cards */
+    div[data-testid="stMetric"] {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    /* Expanders */
+    .streamlit-expanderHeader {
+        font-weight: 600;
+    }
+
+    /* Info boxes */
+    div[data-testid="stAlert"] {
+        border-radius: 8px;
+    }
+
+</style>
+""", unsafe_allow_html=True)
 
 
 # ---------------- SESSION STATE ----------------
