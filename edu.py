@@ -180,7 +180,7 @@ def login_user(username, password):
     password_hash = hash_password(password)
 
     query = """
-    SELECT user_id, name
+    SELECT user_id, name, role
     FROM users
     WHERE username = %s AND password_hash = %s
     """
