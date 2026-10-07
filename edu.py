@@ -400,44 +400,17 @@ if st.sidebar.button(
 # ---------------- HOME ----------------
 
 if page == "🏠 Home":
-
     st.markdown(
-        """
-        <div style="
-            background: linear-gradient(135deg, #12355b, #1f6feb);
-            padding: 35px 40px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-        ">
-            <div style="
-                color: white;
-                font-size: 42px;
-                font-weight: 700;
-                margin-bottom: 8px;
-            ">
-                🏫 EduFix
-            </div>
-
-            <div style="
-                color: #e8f1ff;
-                font-size: 20px;
-                margin-bottom: 8px;
-            ">
-                Smart School Problem Reporting & Decision Support System
-            </div>
-
-            <div style="
-                color: #dbeafe;
-                font-size: 15px;
-            ">
-                Report problems, prioritize their urgency, track progress,
-                and use data to support better school management.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
+    """
+    <div style="background: linear-gradient(135deg, #12355b, #1f6feb); padding: 35px 40px; border-radius: 16px; margin-bottom: 25px;">
+        <div style="color: white; font-size: 42px; font-weight: 700; margin-bottom: 8px;">🏫 EduFix</div>
+        <div style="color: #e8f1ff; font-size: 20px; margin-bottom: 8px;">Smart School Problem Reporting & Decision Support System</div>
+        <div style="color: #dbeafe; font-size: 15px;">Report problems, prioritize their urgency, track progress, and use data to support better school management.</div>
+    </div>
+    """,
+    unsafe_allow_html=True
     )
-
+            
     st.subheader("What EduFix Does")
 
     st.write(
