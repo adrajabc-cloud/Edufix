@@ -397,50 +397,45 @@ if st.sidebar.button(
     st.session_state.user_id = None
     st.session_state.user_name = ""
     st.rerun()
-
-
-# ---------------- HOME ----------------
-
 # ---------------- HOME ----------------
 
 if page == "🏠 Home":
 
-    # Hero section
     st.markdown(
-    """
-    <div style="
-        background: linear-gradient(135deg, #12355b, #1f6feb);
-        padding: 35px 40px;
-        border-radius: 16px;
-        margin-bottom: 25px;
-    ">
-        <h1 style="
-            color: white;
-            margin-bottom: 8px;
-            font-size: 42px;
+        """
+        <div style="
+            background: linear-gradient(135deg, #12355b, #1f6feb);
+            padding: 35px 40px;
+            border-radius: 16px;
+            margin-bottom: 25px;
         ">
-            🏫 EduFix
-        </h1>
+            <div style="
+                color: white;
+                font-size: 42px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            ">
+                🏫 EduFix
+            </div>
 
-        <p style="
-            color: #e8f1ff;
-            font-size: 20px;
-            margin-bottom: 8px;
-        ">
-            Smart School Problem Reporting & Decision Support System
-        </p>
+            <div style="
+                color: #e8f1ff;
+                font-size: 20px;
+                margin-bottom: 8px;
+            ">
+                Smart School Problem Reporting & Decision Support System
+            </div>
 
-        <p style="
-            color: #dbeafe;
-            font-size: 15px;
-            margin-bottom: 0;
-        ">
-            Report problems, prioritize their urgency, track progress,
-            and use data to support better school management.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
+            <div style="
+                color: #dbeafe;
+                font-size: 15px;
+            ">
+                Report problems, prioritize their urgency, track progress,
+                and use data to support better school management.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     st.subheader("What EduFix Does")
@@ -453,84 +448,38 @@ if page == "🏠 Home":
 
     st.divider()
 
-    # Feature cards
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(
-            """
-            <div style="
-                background:white;
-                padding:22px;
-                border-radius:12px;
-                border:1px solid #e2e8f0;
-                min-height:170px;
-            ">
-                <div style="font-size:30px;">📝</div>
-                <h3 style="color:#12355b;">Digital Reporting</h3>
-                <p>
-                    Submit school problems with category, location,
-                    severity and affected people.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.markdown("### 📝 Digital Reporting")
+        st.write(
+            "Submit school problems with category, location, "
+            "severity and affected people."
         )
 
     with col2:
-        st.markdown(
-            """
-            <div style="
-                background:white;
-                padding:22px;
-                border-radius:12px;
-                border:1px solid #e2e8f0;
-                min-height:170px;
-            ">
-                <div style="font-size:30px;">🎯</div>
-                <h3 style="color:#12355b;">Priority Analysis</h3>
-                <p>
-                    A transparent score helps identify problems
-                    requiring greater attention.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.markdown("### 🎯 Priority Analysis")
+        st.write(
+            "A transparent score helps identify problems "
+            "requiring greater attention."
         )
 
     with col3:
-        st.markdown(
-            """
-            <div style="
-                background:white;
-                padding:22px;
-                border-radius:12px;
-                border:1px solid #e2e8f0;
-                min-height:170px;
-            ">
-                <div style="font-size:30px;">📊</div>
-                <h3 style="color:#12355b;">Data Analytics</h3>
-                <p>
-                    Analyze reports, status, severity and problem
-                    patterns through the dashboard.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.markdown("### 📊 Data Analytics")
+        st.write(
+            "Analyze reports, status, severity and problem "
+            "patterns through the dashboard."
         )
 
     st.divider()
 
-    # Workflow
     st.subheader("How EduFix Works")
 
     step1, step2, step3, step4 = st.columns(4)
 
     with step1:
         st.markdown("### 1️⃣ Report")
-        st.caption(
-            "Submit details about a school problem."
-        )
+        st.caption("Submit details about a school problem.")
 
     with step2:
         st.markdown("### 2️⃣ Prioritize")
@@ -553,29 +502,11 @@ if page == "🏠 Home":
 
     st.divider()
 
-    # Project highlight
-    st.markdown(
-        """
-        <div style="
-            background:#eef5ff;
-            border-left:5px solid #1f6feb;
-            padding:20px;
-            border-radius:8px;
-        ">
-            <h3 style="color:#12355b; margin-top:0;">
-                💡 Why EduFix?
-            </h3>
-            <p style="margin-bottom:0;">
-                Instead of relying only on verbal or manual reporting,
-                EduFix creates a structured digital record that can be
-                analyzed and used to support better decision-making.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.info(
+        "💡 EduFix converts school problem reporting into a "
+        "structured digital process that can support "
+        "data-driven decision making."
     )
-
-    st.markdown("<br>", unsafe_allow_html=True)
 
     st.caption(
         "EduFix • Academic Prototype for School Problem Reporting "
