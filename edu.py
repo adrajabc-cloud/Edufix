@@ -266,7 +266,8 @@ if not st.session_state.logged_in:
     "Role",
     [
         "Student",
-        "Teacher"
+        "Teacher", 
+        "Admin"
     ],
     key="register_role"
         )
