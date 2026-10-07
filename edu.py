@@ -404,6 +404,7 @@ if st.sidebar.button(
     st.session_state.logged_in = False
     st.session_state.user_id = None
     st.session_state.user_name = ""
+    st.session_state.user_role = ""
     st.rerun()
 # ---------------- HOME ----------------
 
@@ -1232,4 +1233,162 @@ if page == "📊 Dashboard & Analytics":
         filtered_df[display_columns],
         use_container_width=True
     )
+
+# ---------------- ADMIN MANAGEMENT ----------------
+
+if page == "🛡️ Admin Management" and st.session_state.user_role == "Admin":
+
+    st.title("🛡️ Admin Management")
+
+    st.write(
+        "Manage registered users, monitor school problems, "
+        "and control report status from the administrative panel."
+    )
+
+    st.divider()
+
+    # ---------------- DATABASE CONNECTION ----------------
+
+    connection = None
+
+    try:
+
+        connection = get_connection()
+
+        # USER DATA
+        users_query = """
+        SELECT
+            user_id,
+            name,
+            school_name,
+            role,
+            class_section,
+            username
+        FROM users
+        ORDER BY user_id DESC
+        """
+
+        users_df = pd.read_sql(
+            users_query,
+            connection
+        )
+
+        # REPORT DATA
+        reports_query = """
+        SELECT
+            report_id,
+            category,
+            location,
+            severity,
+            people_affected,
+            report_date,
+            priority_score,
+            status
+        FROM reports
+        ORDER BY report_date DESC, report_id DESC
+        """
+
+        reports_df = pd.read_sql(
+            reports_query,
+            connection
+        )
+
+    except mysql.connector.Error as error:
+
+        st.error(
+            f"Database error: {error}"
+        )
+
+        st.stop()
+
+    finally:
+
+        if connection is not None and connection.is_connected():
+            connection.close()
+
+    # ---------------- ADMIN KPIs ----------------
+
+    total_users = len(users_df)
+    total_reports = len(reports_df)
+
+    pending_reports = (
+        (reports_df["status"] == "Pending").sum()
+        if not reports_df.empty else 0
+    )
+
+    resolved_reports = (
+        (reports_df["status"] == "Resolved").sum()
+        if not reports_df.empty else 0
+    )
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "Registered Users",
+            total_users
+        )
+
+    with col2:
+        st.metric(
+            "Total Reports",
+            total_reports
+        )
+
+    with col3:
+        st.metric(
+            "Pending Reports",
+            pending_reports
+        )
+
+    with col4:
+        st.metric(
+            "Resolved Reports",
+            resolved_reports
+        )
+
+    st.divider()
+
+    # ---------------- USER MANAGEMENT ----------------
+
+    st.subheader("👥 Registered Users")
+
+    if users_df.empty:
+
+        st.info("No registered users found.")
+
+    else:
+
+        st.dataframe(
+            users_df[
+                [
+                    "user_id",
+                    "name",
+                    "school_name",
+                    "role",
+                    "class_section",
+                    "username"
+                ]
+            ],
+            use_container_width=True,
+            hide_index=True
+        )
+
+    st.divider()
+
+    # ---------------- REPORT MANAGEMENT ----------------
+
+    st.subheader("📋 Report Management")
+
+    if reports_df.empty:
+
+        st.info("No reports have been submitted yet.")
+
+    else:
+
+        st.dataframe(
+            reports_df,
+            use_container_width=True,
+            hide_index=True
+        )
 
