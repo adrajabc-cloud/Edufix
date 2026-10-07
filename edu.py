@@ -125,6 +125,8 @@ if "user_id" not in st.session_state:
 
 if "user_name" not in st.session_state:
     st.session_state.user_name = ""
+ if "user_role" not in st.session_state:
+    st.session_state.user_role = ""   
 
 
 # ---------------- PASSWORD HASHING ----------------
@@ -233,6 +235,7 @@ if not st.session_state.logged_in:
                 st.session_state.logged_in = True
                 st.session_state.user_id = user[0]
                 st.session_state.user_name = user[1]
+                st.session_state.user_role = user[2]
 
                 st.success("Login successful!")
                 st.rerun()
@@ -260,14 +263,14 @@ if not st.session_state.logged_in:
         )
 
         role = st.selectbox(
-            "Role",
-            [
-                "Student",
-                "Teacher",
-                "Admin"
-            ],
-            key="register_role"
+    "Role",
+    [
+        "Student",
+        "Teacher"
+    ],
+    key="register_role"
         )
+    
 
         class_section = st.text_input(
             "Class / Section",
@@ -377,14 +380,19 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+pages = [
+    "🏠 Home",
+    "📝 Report a Problem",
+    "🔎 Check Status",
+    "📊 Dashboard & Analytics"
+]
+
+if st.session_state.user_role == "Admin":
+    pages.append("🛡️ Admin Management")
+
 page = st.sidebar.radio(
     "",
-    [
-        "🏠 Home",
-        "📝 Report a Problem",
-        "🔎 Check Status",
-        "📊 Dashboard & Analytics"
-    ]
+    pages
 )
 
 st.sidebar.markdown("---")
