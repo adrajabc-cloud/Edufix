@@ -131,6 +131,151 @@ def login_user(username, password):
     connection.close()
 
     return user
+    # ---------------- LOGIN / REGISTER ----------------
+
+if not st.session_state.logged_in:
+
+    st.title("🏫 EduFix")
+
+    login_tab, register_tab = st.tabs(
+        ["Login", "Register"]
+    )
+
+    # ---------------- LOGIN ----------------
+
+    with login_tab:
+
+        st.subheader("Login")
+
+        username = st.text_input(
+            "Username",
+            key="login_username"
+        )
+
+        password = st.text_input(
+            "Password",
+            type="password",
+            key="login_password"
+        )
+
+        if st.button(
+            "Login",
+            use_container_width=True
+        ):
+
+            user = login_user(
+                username,
+                password
+            )
+
+            if user:
+
+                st.session_state.logged_in = True
+                st.session_state.user_id = user[0]
+                st.session_state.user_name = user[1]
+
+                st.success("Login successful!")
+                st.rerun()
+
+            else:
+
+                st.error(
+                    "Invalid username or password."
+                )
+
+    # ---------------- REGISTER ----------------
+
+    with register_tab:
+
+        st.subheader("Create Account")
+
+        name = st.text_input(
+            "Full Name",
+            key="register_name"
+        )
+
+        school_name = st.text_input(
+            "School Name",
+            key="register_school"
+        )
+
+        role = st.selectbox(
+            "Role",
+            [
+                "Student",
+                "Teacher",
+                "Admin"
+            ],
+            key="register_role"
+        )
+
+        class_section = st.text_input(
+            "Class / Section",
+            key="register_class"
+        )
+
+        username = st.text_input(
+            "Username",
+            key="register_username"
+        )
+
+        password = st.text_input(
+            "Password",
+            type="password",
+            key="register_password"
+        )
+
+        confirm_password = st.text_input(
+            "Confirm Password",
+            type="password",
+            key="register_confirm"
+        )
+
+        if st.button(
+            "Register",
+            use_container_width=True
+        ):
+
+            if not all([
+                name,
+                school_name,
+                class_section,
+                username,
+                password,
+                confirm_password
+            ]):
+
+                st.warning(
+                    "Please fill in all fields."
+                )
+
+            elif password != confirm_password:
+
+                st.error(
+                    "Passwords do not match."
+                )
+
+            else:
+
+                success, message = register_user(
+                    name,
+                    school_name,
+                    role,
+                    class_section,
+                    username,
+                    password
+                )
+
+                if success:
+                    st.success(message)
+                    st.info(
+                        "You can now log in using your username and password."
+                    )
+                else:
+                    st.error(message)
+
+    # IMPORTANT
+    st.stop()
 # ---------------- MAIN APPLICATION ----------------
 
 st.sidebar.title("EduFix")
