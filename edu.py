@@ -804,46 +804,173 @@ if page == "🔎 Check Status":
                     st.write(report["location"])
 
                 with col2:
-                    st.write("**Severity**")
+# ---------------- CHECK STATUS ----------------
+
+if page == "🔎 Check Status":
+
+    st.title("🔎 Check Status")
+
+    st.write(
+        "Track the problems you have reported and monitor their current status."
+    )
+
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    query = """
+    SELECT
+        report_id,
+        category,
+        location,
+        severity,
+        people_affected,
+        report_date,
+        priority_score,
+        status,
+        description
+    FROM reports
+    WHERE user_id = %s
+    ORDER BY report_date DESC, report_id DESC
+    """
+
+    cursor.execute(
+        query,
+        (st.session_state.user_id,)
+    )
+
+    reports = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    if reports:
+
+        # ---------------- SUMMARY ----------------
+
+        total_reports = len(reports)
+        pending_reports = sum(
+            1 for r in reports if r["status"] == "Pending"
+        )
+        in_progress_reports = sum(
+            1 for r in reports if r["status"] == "In Progress"
+        )
+        resolved_reports = sum(
+            1 for r in reports if r["status"] == "Resolved"
+        )
+
+        st.subheader("📌 Report Overview")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Total Reports", total_reports)
+
+        with col2:
+            st.metric("Pending", pending_reports)
+
+        with col3:
+            st.metric("In Progress", in_progress_reports)
+
+        with col4:
+            st.metric("Resolved", resolved_reports)
+
+        st.divider()
+
+        # ---------------- REPORT LIST ----------------
+
+        st.subheader(f"📋 Your Reports ({total_reports})")
+
+        for report in reports:
+
+            status_icon = {
+                "Pending": "🟡",
+                "In Progress": "🔵",
+                "Resolved": "🟢"
+            }.get(report["status"], "⚪")
+
+            with st.expander(
+                f"{status_icon} Report #{report['report_id']} — "
+                f"{report['category']} — "
+                f"{report['status']}"
+            ):
+
+                # Report identification
+                st.markdown(
+                    f"**Report #{report['report_id']}**"
+                )
+
+                st.caption(
+                    f"Submitted on {report['report_date']}"
+                )
+
+                st.divider()
+
+                # Main information
+                col1, col2, col3 = st.columns(3)
+
+                with col1:
+                    st.markdown("**📍 Location**")
+                    st.write(report["location"])
+
+                with col2:
+                    st.markdown("**⚠️ Severity**")
                     st.write(report["severity"])
 
                 with col3:
-                    st.write("**Priority**")
+                    st.markdown("**🎯 Priority Score**")
                     st.write(
                         f"{report['priority_score']}/100"
                     )
 
-                st.write(
-                    f"**People affected:** "
-                    f"{report['people_affected']}"
-                )
+                st.divider()
 
-                st.write(
-                    f"**Date:** "
-                    f"{report['report_date']}"
-                )
+                # Impact
+                st.markdown("**👥 People Affected**")
+                st.write(report["people_affected"])
 
-                st.write(
-                    f"**Description:** "
-                    f"{report['description']}"
-                )
+                # Description
+                st.markdown("**📝 Description**")
 
+                if report["description"]:
+                    st.write(report["description"])
+                else:
+                    st.caption("No description provided.")
+
+                st.divider()
+
+                # Status
                 if report["status"] == "Pending":
-                    st.warning("Status: Pending")
+
+                    st.warning(
+                        "🟡 **Pending** — Your report has been submitted "
+                        "and is awaiting action."
+                    )
 
                 elif report["status"] == "In Progress":
-                    st.info("Status: In Progress")
+
+                    st.info(
+                        "🔵 **In Progress** — Action is currently being "
+                        "taken on this problem."
+                    )
 
                 elif report["status"] == "Resolved":
-                    st.success("Status: Resolved")
+
+                    st.success(
+                        "🟢 **Resolved** — This problem has been marked "
+                        "as resolved."
+                    )
 
     else:
 
         st.info(
-            "You have not submitted any problem reports yet."
+            "📭 You have not submitted any problem reports yet."
         )
 
-  # ==============================
+        st.write(
+            "Use **Report a Problem** to submit your first report."
+        )
+    
+# ==============================
 # DASHBOARD & ANALYTICS
 # ==============================
 
