@@ -1436,18 +1436,22 @@ except mysql.connector.Error as error:
 
                     connection = get_connection()
                     cursor = connection.cursor()
-
-                    update_query = """
-                    UPDATE reports
-                    SET status = %s
-                    WHERE report_id = %s"""
-
+                     update_query = """
+                     UPDATE reports
+                     SET status = %s,
+                     admin_message = %s
+                     WHERE report_id = %s
+                    """
                     cursor.execute(
-                        update_query,
-                        (new_status, selected_id)
-                    )
+    update_query,
+    (
+        new_status,
+        admin_message,
+        selected_id
+    )
+)
 
-                    connection.commit()
+connection.commit()
 
                     st.success(
                         f"Report #{selected_id} status changed to "
