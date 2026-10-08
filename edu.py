@@ -1440,8 +1440,7 @@ except mysql.connector.Error as error:
                     update_query = """
                     UPDATE reports
                     SET status = %s
-                    WHERE report_id = %s
-                    """
+                    WHERE report_id = %s"""
 
                     cursor.execute(
                         update_query,
