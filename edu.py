@@ -266,7 +266,8 @@ if not st.session_state.logged_in:
     "Role",
     [
         "Student",
-        "Teacher", 
+        "Teacher",
+        "Parent", 
         "Admin"
     ],
     key="register_role"
@@ -956,8 +957,8 @@ if page == "📊 Dashboard & Analytics":
             priority_score,
             status
         FROM reports
-        ORDER BY report_date DESC, report_id DESC
-        """
+WHERE user_id = %s
+ORDER BY report_date DESC, report_id DESC
 
         df = pd.read_sql(query, connection)
 
