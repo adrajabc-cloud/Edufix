@@ -771,21 +771,23 @@ if page == "🔎 Check Status":
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
 
+    
     query = """
-    SELECT
-        report_id,
-        category,
-        location,
-        severity,
-        people_affected,
-        report_date,
-        priority_score,
-        status,
-        description
-    FROM reports
-    WHERE user_id = %s
-    ORDER BY report_date DESC, report_id DESC
-    """
+SELECT
+    report_id,
+    category,
+    location,
+    severity,
+    people_affected,
+    report_date,
+    priority_score,
+    status,
+    description,
+    admin_message
+FROM reports
+WHERE user_id = %s
+ORDER BY report_date DESC, report_id DESC
+"""
 
     cursor.execute(
         query,
@@ -923,21 +925,16 @@ if page == "🔎 Check Status":
         st.write(
             "Use **Report a Problem** to submit your first report."
         )               
-# ==============================
-# DASHBOARD & ANALYTICS
-# ==============================
+# ---------------- DASHBOARD & ANALYTICS ----------------
 
 if page == "📊 Dashboard & Analytics":
 
     st.title("📊 Dashboard & Analytics")
+
     st.write(
-        "Analyze reported school problems and monitor their "
+        "Analyze your reported school problems and monitor their "
         "priority, status and impact."
     )
-
-    # ------------------------------
-    # LOAD REPORTS FROM MYSQL
-    # ------------------------------
 
     connection = None
 
@@ -957,14 +954,15 @@ if page == "📊 Dashboard & Analytics":
             priority_score,
             status
         FROM reports
-WHERE user_id = %s
-ORDER BY report_date DESC, report_id DESC
+        WHERE user_id = %s
+        ORDER BY report_date DESC, report_id DESC
+        """
 
         df = pd.read_sql(
-    query,
-    connection,
-    params=(st.session_state.user_id,)
-)
+            query,
+            connection,
+            params=(st.session_state.user_id,)
+        )
 
     except mysql.connector.Error as error:
         st.error(f"Database error: {error}")
@@ -974,25 +972,16 @@ ORDER BY report_date DESC, report_id DESC
         if connection is not None and connection.is_connected():
             connection.close()
 
-    # ------------------------------
-    # CHECK IF REPORTS EXIST
-    # ------------------------------
-
     if df.empty:
-
-        st.info(
-            "No reports have been submitted yet."
+        st.info("📭 You have not submitted any problem reports yet.")
+        st.write(
+            "Use **Report a Problem** to submit your first report."
         )
-
         st.stop()
 
-    # ------------------------------
-    # PREPARE DATE DATA
-    # ------------------------------
+    # ---------------- PRIORITY CALCULATION ----------------
 
-    df["report_date"] = pd.to_datetime(
-        df["report_date"]
-    )
+    df["report_date"] = pd.to_datetime(df["report_date"])
 
     today = pd.Timestamp(date.today())
 
@@ -1000,16 +989,10 @@ ORDER BY report_date DESC, report_id DESC
         today - df["report_date"]
     ).dt.days
 
-    # Resolved reports do not accumulate
-    # unresolved duration
     df.loc[
         df["status"] == "Resolved",
         "days_unresolved"
     ] = 0
-
-    # ------------------------------
-    # TIME-BASED PRIORITY
-    # ------------------------------
 
     def calculate_time_points(days):
 
@@ -1028,28 +1011,17 @@ ORDER BY report_date DESC, report_id DESC
         else:
             return 10
 
-    df["time_points"] = (
-        df["days_unresolved"]
-        .apply(calculate_time_points)
-    )
-
-    # ------------------------------
-    # CURRENT PRIORITY
-    # ------------------------------
-
-    df["current_priority"] = (
-        df["priority_score"]
-        + df["time_points"]
+    df["time_points"] = df["days_unresolved"].apply(
+        calculate_time_points
     )
 
     df["current_priority"] = (
-        df["current_priority"]
-        .clip(upper=100)
+        df["priority_score"] + df["time_points"]
     )
 
-    # ------------------------------
-    # CURRENT PRIORITY LEVEL
-    # ------------------------------
+    df["current_priority"] = df["current_priority"].clip(
+        upper=100
+    )
 
     def get_priority_level(score):
 
@@ -1063,15 +1035,12 @@ ORDER BY report_date DESC, report_id DESC
             return "Low"
 
     df["current_priority_level"] = (
-        df["current_priority"]
-        .apply(get_priority_level)
+        df["current_priority"].apply(
+            get_priority_level
+        )
     )
 
-    # ==============================
-    # KPI CARDS
-    # ==============================
-
-    st.subheader("📌 Overview")
+    # ---------------- KPI CARDS ----------------
 
     total_reports = len(df)
 
@@ -1090,6 +1059,8 @@ ORDER BY report_date DESC, report_id DESC
     high_priority_reports = (
         df["current_priority_level"] == "High"
     ).sum()
+
+    st.subheader("📌 Your Report Overview")
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -1123,105 +1094,104 @@ ORDER BY report_date DESC, report_id DESC
             high_priority_reports
         )
 
-    # ==============================
-    # FILTERS
-    # ==============================
+    st.divider()
 
-    st.subheader("🔎 Filter Reports")
+    # ---------------- FILTERS ----------------
 
-    col1, col2 = st.columns(2)
+    st.subheader("🔎 Filter Your Reports")
+
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
 
-        category_filter = st.multiselect(
+        category_options = [
+            "All"
+        ] + sorted(
+            df["category"].dropna().unique().tolist()
+        )
+
+        selected_category = st.selectbox(
             "Category",
-            sorted(
-                df["category"]
-                .dropna()
-                .unique()
-            ),
-            default=sorted(
-                df["category"]
-                .dropna()
-                .unique()
-            )
+            category_options
         )
 
     with col2:
 
-        location_filter = st.multiselect(
-            "Location",
-            sorted(
-                df["location"]
-                .dropna()
-                .unique()
-            ),
-            default=sorted(
-                df["location"]
-                .dropna()
-                .unique()
-            )
+        location_options = [
+            "All"
+        ] + sorted(
+            df["location"].dropna().unique().tolist()
         )
 
-    col3, col4 = st.columns(2)
+        selected_location = st.selectbox(
+            "Location",
+            location_options
+        )
 
     with col3:
 
-        severity_filter = st.multiselect(
+        severity_options = [
+            "All"
+        ] + sorted(
+            df["severity"].dropna().unique().tolist()
+        )
+
+        selected_severity = st.selectbox(
             "Severity",
-            [
-                "Low",
-                "Medium",
-                "High",
-                "Critical"
-            ],
-            default=[
-                "Low",
-                "Medium",
-                "High",
-                "Critical"
-            ]
+            severity_options
         )
 
     with col4:
 
-        status_filter = st.multiselect(
-            "Status",
-            [
-                "Pending",
-                "In Progress",
-                "Resolved"
-            ],
-            default=[
-                "Pending",
-                "In Progress",
-                "Resolved"
-            ]
+        status_options = [
+            "All"
+        ] + sorted(
+            df["status"].dropna().unique().tolist()
         )
 
-    # ------------------------------
-    # APPLY FILTERS
-    # ------------------------------
+        selected_status = st.selectbox(
+            "Status",
+            status_options
+        )
 
-    filtered_df = df[
-        df["category"].isin(category_filter)
-        &
-        df["location"].isin(location_filter)
-        &
-        df["severity"].isin(severity_filter)
-        &
-        df["status"].isin(status_filter)
-    ].copy()
+    filtered_df = df.copy()
+
+    if selected_category != "All":
+
+        filtered_df = filtered_df[
+            filtered_df["category"]
+            == selected_category
+        ]
+
+    if selected_location != "All":
+
+        filtered_df = filtered_df[
+            filtered_df["location"]
+            == selected_location
+        ]
+
+    if selected_severity != "All":
+
+        filtered_df = filtered_df[
+            filtered_df["severity"]
+            == selected_severity
+        ]
+
+    if selected_status != "All":
+
+        filtered_df = filtered_df[
+            filtered_df["status"]
+            == selected_status
+        ]
 
     st.info(
-        f"{len(filtered_df)} reports match the selected filters."
+        f"{len(filtered_df)} of {total_reports} "
+        "reports match the selected filters."
     )
 
-    # ==============================
-    # CURRENT REPORT DATA
-    # ==============================
+    # ---------------- DATAFRAME ----------------
 
-    st.subheader("📋 Report Data")
+    st.subheader("📋 Your Reports")
 
     display_columns = [
         "report_id",
@@ -1238,8 +1208,10 @@ ORDER BY report_date DESC, report_id DESC
 
     st.dataframe(
         filtered_df[display_columns],
-        use_container_width=True
+        use_container_width=True,
+        hide_index=True
     )
+# ---------------- ADMIN MANAGEMENT ----------------
 
 if (
     page == "🛡️ Admin Management"
@@ -1249,230 +1221,366 @@ if (
     st.title("🛡️ Admin Management")
 
     st.write(
-        "Review reported school problems and manage their current status."
+        "Review reported school problems, update their status, "
+        "and communicate with complainants."
     )
 
     st.divider()
-    connection = None
-    try:
-    connection = get_connection()
 
-    query = """
+    connection = None
+
+    try:
+
+        connection = get_connection()
+
+        query = """
         SELECT
-        r.report_id,
-        r.category,
-        r.location,
-        r.severity,
-        r.people_affected,
-        r.report_date,
-        r.description,
-        r.priority_score,
-        r.status,
-        u.name,
-        u.username
+            r.report_id,
+            r.category,
+            r.location,
+            r.severity,
+            r.people_affected,
+            r.report_date,
+            r.description,
+            r.priority_score,
+            r.status,
+            r.admin_message,
+            u.name,
+            u.username
         FROM reports r
         JOIN users u
         ON r.user_id = u.user_id
         ORDER BY r.report_date DESC, r.report_id DESC
         """
 
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query)
-    reports = cursor.fetchall()
+        cursor = connection.cursor(
+            dictionary=True
+        )
 
-    cursor.close()
-    
-except mysql.connector.Error as error:
-    st.error(f"Database error: {error}")
-    st.stop()
-   
+        cursor.execute(query)
+
+        reports = cursor.fetchall()
+
+        cursor.close()
+
+    except mysql.connector.Error as error:
+
+        st.error(
+            f"Database error: {error}"
+        )
+
+        st.stop()
+
     finally:
 
-        if connection is not None and connection.is_connected():
+        if (
+            connection is not None
+            and connection.is_connected()
+        ):
             connection.close()
+
+    # ---------------- NO REPORTS ----------------
+
+    if not reports:
+
+        st.info(
+            "📭 No reports have been submitted yet."
+        )
+
+        st.stop()
+
+    # ---------------- ADMIN SUMMARY ----------------
 
     total_reports = len(reports)
 
     pending_reports = sum(
-        1 for report in reports
+        1
+        for report in reports
         if report["status"] == "Pending"
     )
 
     in_progress_reports = sum(
-        1 for report in reports
+        1
+        for report in reports
         if report["status"] == "In Progress"
     )
 
     resolved_reports = sum(
-        1 for report in reports
+        1
+        for report in reports
         if report["status"] == "Resolved"
     )
 
-    st.subheader("📊 Report Overview")
+    high_priority_reports = sum(
+        1
+        for report in reports
+        if report["priority_score"] >= 70
+    )
 
-    col1, col2, col3, col4 = st.columns(4)
+    st.subheader("📌 School Report Overview")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.metric("Total Reports", total_reports)
+        st.metric(
+            "Total Reports",
+            total_reports
+        )
 
     with col2:
-        st.metric("Pending", pending_reports)
+        st.metric(
+            "Pending",
+            pending_reports
+        )
 
     with col3:
-        st.metric("In Progress", in_progress_reports)
+        st.metric(
+            "In Progress",
+            in_progress_reports
+        )
 
     with col4:
-        st.metric("Resolved", resolved_reports)
+        st.metric(
+            "Resolved",
+            resolved_reports
+        )
+
+    with col5:
+        st.metric(
+            "High Priority",
+            high_priority_reports
+        )
 
     st.divider()
 
-    st.subheader("📋 Manage Report Status")
-    if not reports:
-        st.info("No reports have been submitted yet.")
+    # ---------------- REPORT SELECTION ----------------
 
-    else:
-        report_options = {
+    st.subheader("📋 Manage Reports")
+
+    report_options = {}
+
+    for report in reports:
+
+        report_label = (
             f"Report #{report['report_id']} — "
             f"{report['category']} — "
-            f"{report['status']}":
-            report["report_id"]
-            for report in reports
-        }
-
-        selected_report = st.selectbox(
-            "Select a report",
-            list(report_options.keys())
+            f"{report['status']} — "
+            f"{report['name']}"
         )
 
-        selected_id = report_options[selected_report]
+        report_options[report_label] = report["report_id"]
 
-        selected_data = next(
-            report
-            for report in reports
-            if report["report_id"] == selected_id
+    selected_report_label = st.selectbox(
+        "Select a report to manage",
+        list(report_options.keys())
+    )
+
+    selected_id = report_options[
+        selected_report_label
+    ]
+
+    selected_report = next(
+        report
+        for report in reports
+        if report["report_id"] == selected_id
+    )
+
+    st.divider()
+
+    # ---------------- REPORT DETAILS ----------------
+
+    st.subheader(
+        f"📝 Report #{selected_report['report_id']}"
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        st.markdown("**👤 Complainant**")
+
+        st.write(
+            selected_report["name"]
         )
 
-        st.markdown("### 🔎 Report Details")
+        st.caption(
+            f"Username: {selected_report['username']}"
+        )
 
-        col1, col2, col3 = st.columns(3)
+    with col2:
 
-        with col1:
-            st.markdown("**👤 Reported By**")
-            st.write(selected_data["name"])
+        st.markdown("**📍 Location**")
 
-        with col2:
-            st.markdown("**📍 Location**")
-            st.write(selected_data["location"])
+        st.write(
+            selected_report["location"]
+        )
 
-        with col3:
-            st.markdown("**⚠️ Severity**")
-            st.write(selected_data["severity"])
+    with col3:
 
-        col1, col2, col3 = st.columns(3)
+        st.markdown("**⚠️ Severity**")
 
-        with col1:
-            st.markdown("**🎯 Priority Score**")
-            st.write(
-                f"{selected_data['priority_score']}/100"
+        st.write(
+            selected_report["severity"]
+        )
+
+    st.divider()
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        st.markdown("**📂 Category**")
+
+        st.write(
+            selected_report["category"]
+        )
+
+    with col2:
+
+        st.markdown("**👥 People Affected**")
+
+        st.write(
+            selected_report["people_affected"]
+        )
+
+    with col3:
+
+        st.markdown("**🎯 Priority Score**")
+
+        st.write(
+            f"{selected_report['priority_score']}/100"
+        )
+
+    st.markdown("**📅 Report Date**")
+
+    st.write(
+        selected_report["report_date"]
+    )
+
+    st.markdown("**📝 Description**")
+
+    if selected_report["description"]:
+
+        st.write(
+            selected_report["description"]
+        )
+
+    else:
+
+        st.caption(
+            "No description provided."
+        )
+
+    st.divider()
+
+    # ---------------- UPDATE STATUS ----------------
+
+    st.subheader("🔄 Update Report")
+
+    status_options = [
+        "Pending",
+        "In Progress",
+        "Resolved"
+    ]
+
+    current_status = selected_report["status"]
+
+    new_status = st.selectbox(
+        "Report Status",
+        status_options,
+        index=status_options.index(
+            current_status
+        ),
+        key=f"status_{selected_id}"
+    )
+
+    st.markdown(
+        "### 💬 Message to Complainant"
+    )
+
+    existing_message = (
+        selected_report["admin_message"]
+        if selected_report["admin_message"]
+        else ""
+    )
+
+    admin_message = st.text_area(
+        "Write a message for the complainant",
+        value=existing_message,
+        placeholder=(
+            "Example: The maintenance team has "
+            "been informed and the issue will be "
+            "addressed shortly."
+        ),
+        key=f"admin_message_{selected_id}"
+    )
+
+    if st.button(
+        "💾 Update Report",
+        use_container_width=True
+    ):
+
+        if not admin_message.strip():
+
+            st.warning(
+                "Please write a message for the complainant "
+                "before updating the report."
             )
 
-        with col2:
-            st.markdown("**👥 People Affected**")
-            st.write(
-                selected_data["people_affected"]
-            )
-
-        with col3:
-            st.markdown("**📅 Report Date**")
-            st.write(
-                selected_data["report_date"]
-            )
-
-        st.markdown("**📝 Description**")
-
-        if selected_data["description"]:
-            st.write(selected_data["description"])
         else:
-            st.caption("No description provided.")
 
-        st.divider()
+            connection = None
 
-        # ---------------- STATUS UPDATE ----------------
+            try:
 
-        st.markdown("### 🔄 Update Status")
+                connection = get_connection()
 
-        current_status = selected_data["status"]
+                update_query = """
+                UPDATE reports
+                SET
+                    status = %s,
+                    admin_message = %s
+                WHERE report_id = %s
+                """
 
-        status_options = [
-            "Pending",
-            "In Progress",
-            "Resolved"
-        ]
+                cursor = connection.cursor()
 
-        new_status = st.selectbox(
-            "Report Status",
-            status_options,
-            index=status_options.index(current_status),
-            key=f"status_{selected_id}"
-        )
-
-        if st.button(
-            "💾 Update Status",
-            use_container_width=True
-        ):
-
-            if new_status == current_status:
-
-                st.info(
-                    f"The report is already marked as {current_status}."
+                cursor.execute(
+                    update_query,
+                    (
+                        new_status,
+                        admin_message.strip(),
+                        selected_id
+                    )
                 )
 
-            else:
+                connection.commit()
 
-                connection = None
-                cursor = None
+                cursor.close()
 
-                try:
+                st.success(
+                    "✅ Report status and message updated successfully."
+                )
 
-                    connection = get_connection()
-                    cursor = connection.cursor()
-                     update_query = """
-                     UPDATE reports
-                     SET status = %s,
-                     admin_message = %s
-                     WHERE report_id = %s
-                    """
-                    cursor.execute(
-    update_query,
-    (
-        new_status,
-        admin_message,
-        selected_id
-    )
-)
+                st.rerun()
 
-connection.commit()
+            except mysql.connector.Error as error:
 
-                    st.success(
-                        f"Report #{selected_id} status changed to "
-                        f"{new_status}."
-                    )
+                st.error(
+                    f"Database error: {error}"
+                )
 
-                    st.rerun()
+            finally:
 
-                except mysql.connector.Error as error:
+                if (
+                    connection is not None
+                    and connection.is_connected()
+                ):
+                    connection.close()
+    
+    
+                
+        
+        
 
-                    st.error(
-                        f"Database error: {error}"
-                    )
-
-                finally:
-
-                    if cursor is not None:
-                        cursor.close()
-
-                    if (
-                        connection is not None
-                        and connection.is_connected()
-                    ):
-                        connection.close()
+                    
