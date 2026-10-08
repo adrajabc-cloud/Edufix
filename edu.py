@@ -1255,36 +1255,37 @@ if (
     st.divider()
     connection = None
     try:
-        connection = get_connection()
-        query = """
-        SELECT
-            r.report_id,
-            r.category,
-            r.location,
-            r.severity,
-            r.people_affected,
-            r.report_date,
-            r.description,
-            r.priority_score,
-            r.status,
-            u.name,
-            u.username
-        FROM reports r
-        JOIN users u
-        ON r.user_id = u.user_id
-        ORDER BY r.report_date DESC, r.report_id DESC
-        """
+    connection = get_connection()
 
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute(query)
-        reports = cursor.fetchall()
-        cursor.close()
+    query = """
+    SELECT
+        r.report_id,
+        r.category,
+        r.location,
+        r.severity,
+        r.people_affected,
+        r.report_date,
+        r.description,
+        r.priority_score,
+        r.status,
+        u.name,
+        u.username
+    FROM reports r
+    JOIN users u
+    ON r.user_id = u.user_id
+    ORDER BY r.report_date DESC, r.report_id DESC
+    """
 
-    except mysql.connector.Error as error:
-        st.error(
-            f"Database error: {error}"
-        )
-        st.stop()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute(query)
+    reports = cursor.fetchall()
+
+    cursor.close()
+
+except mysql.connector.Error as error:
+    st.error(f"Database error: {error}")
+    st.stop()
+   
     finally:
 
         if connection is not None and connection.is_connected():
