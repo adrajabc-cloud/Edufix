@@ -1270,11 +1270,11 @@ if (
         r.status,
         u.name,
         u.username
-    FROM reports r
-    JOIN users u
-    ON r.user_id = u.user_id
-    ORDER BY r.report_date DESC, r.report_id DESC
-    """
+        FROM reports r
+        JOIN users u
+        ON r.user_id = u.user_id
+        ORDER BY r.report_date DESC, r.report_id DESC
+        """
 
     cursor = connection.cursor(dictionary=True)
     cursor.execute(query)
