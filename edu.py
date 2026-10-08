@@ -1256,6 +1256,7 @@ if (
     connection = None
     try:
     connection = get_connection()
+
     query = """
     SELECT
         r.report_id,
@@ -1278,6 +1279,7 @@ if (
     cursor = connection.cursor(dictionary=True)
     cursor.execute(query)
     reports = cursor.fetchall()
+
     cursor.close()
     
 except mysql.connector.Error as error:
