@@ -960,7 +960,11 @@ if page == "📊 Dashboard & Analytics":
 WHERE user_id = %s
 ORDER BY report_date DESC, report_id DESC
 
-        df = pd.read_sql(query, connection)
+        df = pd.read_sql(
+    query,
+    connection,
+    params=(st.session_state.user_id,)
+)
 
     except mysql.connector.Error as error:
         st.error(f"Database error: {error}")
