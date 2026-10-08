@@ -892,8 +892,17 @@ ORDER BY report_date DESC, report_id DESC
                 else:
                     st.caption("No description provided.")
 
-                st.divider()
-
+                if report["admin_message"]:
+                    st.divider()
+                    st.markdown(
+                        "### 💬 Message from Admin"
+                    )
+     
+                    st.info(
+                        report["admin_message"]
+                    )
+                    st.divider()
+                
                 # Status
                 if report["status"] == "Pending":
 
