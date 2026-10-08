@@ -398,6 +398,12 @@ page = st.sidebar.radio(
     pages
 )
 
+st.sidebar.divider()
+
+st.sidebar.caption("Developed by")
+st.sidebar.markdown("**Aditya Raj**")
+st.sidebar.caption("Class XII ")
+
 st.sidebar.markdown("---")
 
 if st.sidebar.button(
