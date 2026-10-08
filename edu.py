@@ -1258,7 +1258,7 @@ if (
     connection = get_connection()
 
     query = """
-    SELECT
+        SELECT
         r.report_id,
         r.category,
         r.location,
