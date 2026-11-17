@@ -35,14 +35,21 @@ finally:
         connection.close()
 
 # ---------------- DATABASE CONNECTION ----------------
-
 def get_connection():
+    ca_path = "/tmp/tidb_ca.pem"
+
+    with open(ca_path, "w") as file:
+        file.write(st.secrets["CA_CERT"])
+
     return mysql.connector.connect(
         host=st.secrets["DB_HOST"],
-        port=st.secrets["DB_PORT"],
+        port=int(st.secrets["DB_PORT"]),
         user=st.secrets["DB_USER"],
         password=st.secrets["DB_PASSWORD"],
-        database=st.secrets["DB_NAME"]
+        database=st.secrets["DB_NAME"],
+        ssl_ca=ca_path,
+        ssl_verify_cert=True,
+        ssl_verify_identity=True
     )
 
 
