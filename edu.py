@@ -2,12 +2,11 @@ import streamlit as st
 import hashlib
 from datetime import date, datetime
 import pandas as pd
-import matplotlib.pyplot as plt
 import mysql.connector
 
 def get_connection():
 
-    ca_path = "/tmp/aiven_ca.pem"
+    ca_path = "/tmp/tidb_ca.pem"
 
     with open(ca_path, "w") as file:
         file.write(st.secrets["CA_CERT"])
@@ -20,6 +19,7 @@ def get_connection():
         database=st.secrets["DB_NAME"],
         ssl_ca=ca_path,
         ssl_verify_cert=True
+        ssl_verify_identity=True
     )
 
 
